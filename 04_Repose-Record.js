@@ -78,7 +78,10 @@ Guard object:
 let guards = {};
 let currentGuard;
 let sleepiestGuardNumber;
-let mostSleep = 0;
+let mostTotalSleep = 0;
+let sleepChamp;
+let sleepChampRecord = 0;
+let sleepChampMinute;
 
 input.forEach((record,i) => {
 	if (record.activity[0] === '#') {
@@ -95,10 +98,15 @@ input.forEach((record,i) => {
 		let totalSleep = record.mins - asleep;
 		for (let j=asleep; j<record.mins; j++) {
 			guards[currentGuard].log[j] ++;
+			if (guards[currentGuard].log[j] > sleepChampRecord) {
+				sleepChampRecord = guards[currentGuard].log[j];
+				sleepChamp = currentGuard;
+				sleepChampMinute = j;
+			}
 		}
 		guards[currentGuard].total += totalSleep;
-		if (guards[currentGuard].total > mostSleep) {
-			mostSleep = guards[currentGuard].total;
+		if (guards[currentGuard].total > mostTotalSleep) {
+			mostTotalSleep = guards[currentGuard].total;
 			sleepiestGuardNumber = currentGuard;
 		}
 	} 
@@ -111,5 +119,15 @@ let sleepiestMinute = guards[sleepiestGuardNumber].log.indexOf(heaviestSleep);
 console.log(sleepiestMinute);
 console.log(Number(sleepiestGuardNumber.slice(1)) * sleepiestMinute)
 
+
+// --- Part Two ---
+// Strategy 2: Of all guards, which guard is most frequently asleep on the same minute?
+
+// In the example above, Guard #99 spent minute 45 asleep more than any other guard or minute - three times in total. (In all other cases,
+// 	any guard spent any minute asleep at most twice.)
+
+// What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 99 * 45 = 4455.)
+
+console.log(Number(sleepChamp.slice(1)) * sleepChampMinute);
 
 
