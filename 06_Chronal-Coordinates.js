@@ -15,12 +15,12 @@
 
 // Your goal is to find the size of the largest area that isn't infinite. For example, consider the following list of coordinates:
 
-const raw = `1, 1
-1, 6
-8, 3
-3, 4
-5, 5
-8, 9`
+// const raw = `1, 1
+// 1, 6
+// 8, 3
+// 3, 4
+// 5, 5
+// 8, 9`
 
 // If we name these coordinates A through F, we can draw them on a grid, putting 0,0 at the top left:
 
@@ -58,7 +58,7 @@ const raw = `1, 1
 
 
 
-// const raw = require('./06_input.js');
+const raw = require('./06_input.js');
 
 let leftEdge = { edge: Infinity, indices: [] };
 let rightEdge = { edge: -1, indices: [] };
@@ -100,34 +100,37 @@ let clean = raw.split('\n').map((entry,i) => {
 	}
 });
 
-let grid = new Array(bottomEdge.edge+1).fill(new Array(rightEdge.edge+1));
+let grid = new Array(bottomEdge.edge+1);
+let tally = new Array(clean.length).fill(0);
 
 for (let i=0; i<grid.length; i++) {
+	grid[i] = new Array(rightEdge.edge+1)
+
 	for (let j=0; j<grid[0].length; j++) {
 		grid[i][j] = { distance: Infinity, closestIndex: null };
-	}
-}
-
-
-
-for (let i=0; i<grid.length; i++) {
-	// console.log('In row', i);
-	
-	for (let j=0; j<grid[0].length; j++) {
-		// console.log('In col', j);
-		// console.log(grid[i]);f
+		
 		for (let k=0; k<clean.length; k++) {
 			let distance = Math.abs(i-clean[k].row) + Math.abs(j-clean[k].col);
 			if (distance < grid[i][j].distance) {
+				grid[i][j].closestIndex !== null && tally[Number(grid[i][j].closestIndex)] --;
 				grid[i][j].distance = distance;
 				grid[i][j].closestIndex = clean[k].index;
+				tally[Number(clean[k].index)] ++;
 			} else if (distance === grid[i][j].distance) {
+				grid[i][j].closestIndex !== 'multiple' && tally[Number(grid[i][j].closestIndex)] --;
 				grid[i][j].closestIndex = 'multiple';
 			}
 		}
 	}
 }
 
-console.log(clean);
-console.log(grid[0]);
+for (let i=0; i<grid.length; i++) {
+	for (let j=0; j<grid[0].length; j++) {
+		if ((i === 0 || j === 0 || i === grid.length - 1 || j === grid[0].length -1) && tally[Number(grid[i][j].closestIndex)] !== -1) {
+			tally[Number(grid[i][j].closestIndex)] = -1;
+		}
+	}
+}
+
+console.log(Math.max(...tally));
 
