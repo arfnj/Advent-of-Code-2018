@@ -102,15 +102,17 @@ let clean = raw.split('\n').map((entry,i) => {
 
 let grid = new Array(bottomEdge.edge+1);
 let tally = new Array(clean.length).fill(0);
+let inRegion = 0;
 
 for (let i=0; i<grid.length; i++) {
 	grid[i] = new Array(rightEdge.edge+1)
 
 	for (let j=0; j<grid[0].length; j++) {
-		grid[i][j] = { distance: Infinity, closestIndex: null };
+		grid[i][j] = { distance: Infinity, closestIndex: null, totalDistance: 0 };
 		
 		for (let k=0; k<clean.length; k++) {
 			let distance = Math.abs(i-clean[k].row) + Math.abs(j-clean[k].col);
+			grid[i][j].totalDistance += distance;
 			if (distance < grid[i][j].distance) {
 				grid[i][j].closestIndex !== null && tally[Number(grid[i][j].closestIndex)] --;
 				grid[i][j].distance = distance;
@@ -121,6 +123,7 @@ for (let i=0; i<grid.length; i++) {
 				grid[i][j].closestIndex = 'multiple';
 			}
 		}
+		grid[i][j].totalDistance < 10000 && inRegion ++;
 	}
 }
 
@@ -133,4 +136,5 @@ for (let i=0; i<grid.length; i++) {
 }
 
 console.log(Math.max(...tally));
+console.log(inRegion);
 
